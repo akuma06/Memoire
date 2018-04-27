@@ -10,6 +10,7 @@ import v13.agents.chartist.StrategicAgent
 import v13.agents.chartist.policy.MarketOrderPolicy
 import v13.agents.chartist.signal.*
 import v13.agents.chartist.strategy.SingleSignalStrategy
+import kotlin.system.exitProcess
 
 // Constantes parametrant la modelisation
 // BASE_MONEY correspond a la base monetaire de chaque agent
@@ -34,6 +35,7 @@ const val NB_REVERSE_BL = 1
 const val NB_ZIT = 2
 
 fun main(args: Array<String>) {
+    checkConstantes()
     val sim = MonothreadedSimulation()
 
     // Pas de possibilite de set logType (static in non-static method)
@@ -74,6 +76,7 @@ fun main(args: Array<String>) {
 
     // On ajoute un IntradayCandleAgent qui va agir avec ses strategies contre tous les autres agents Chartistes
     // On peut ainsi tester seulement les performances de sa strategie (meme maniere que le papier HFT)
+    // comme l'agent chandelier ne prend qu'une décision
     sim.addNewAgent(IntradayCandleAgent("ID_Candle",BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), 5, policy = MarketOrderPolicy(14500L, 75, false)))
 
     // Reste du old hack pour avoir les donnees en temps reel
@@ -84,4 +87,24 @@ fun main(args: Array<String>) {
     sim.run(Day.createEuroNEXT(0, TICKS, 0), NB_DAYS)
     sim.market.printState()
     sim.market.close()
+}
+
+fun checkConstantes() {
+    if (BASE_MONEY < 0)
+        error("L'argent de base doit être positive")
+
+    if (NB_DAYS <= 0)
+        error("Le nombre de jours doit être supérieur à 0")
+
+    if (TICKS <= 0)
+        error("Le nombre de ticks doit être supérieur à 0")
+
+    if (NB_CHARTIST < NB_BEST_LIMIT)
+        error("Le nombre total de chartistes doit être supérieur ou égal au nombre de chartiste en Best Limit")
+
+    if (NB_CHARTIST < NB_REVERSE)
+        error("Le nombre total de chartistes doit être supérieur ou égal au nombre de chartiste contrariant sans BL")
+
+    if (NB_BEST_LIMIT < NB_REVERSE_BL)
+        error("Le nombre total de chartistes avec BL doit être supérieur ou égal au nombre de chartiste contrariant avec BL")
 }

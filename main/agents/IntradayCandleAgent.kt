@@ -13,7 +13,7 @@ import v13.agents.chartist.strategy.Strategy
 
 class IntradayCandleAgent(name: String, cash: Long, private val interval: Int = 11, private  val strategy: Strategy = AtLeastStrategy(), private val policy: OrderPolicy = BestBidAsk()) : Agent(name, cash) {
     // Puisque ATOM ne semble pas garder et/ou rendre accessible les jours
-    // on les store ici
+    // on les store ici (singleton pour moins de RAM et eviter Garbage Collector Error)
     private val prices = PricesList
     val signals = ArrayList<Signal>()
     init {
@@ -39,7 +39,7 @@ class IntradayCandleAgent(name: String, cash: Long, private val interval: Int = 
             return null
 
         prices.add(PriceCandle().ReadDay(asset, interval))
-        this.market.log.info("DEBUG: Seems to at least run!!!!")
+        // this.market.log.info("DEBUG: Seems to at least run!!!!")
 
         val directions = ArrayList<Signal.Direction>()
 
