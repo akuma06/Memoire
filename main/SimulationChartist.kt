@@ -10,7 +10,6 @@ import v13.agents.chartist.StrategicAgent
 import v13.agents.chartist.policy.MarketOrderPolicy
 import v13.agents.chartist.signal.*
 import v13.agents.chartist.strategy.SingleSignalStrategy
-import kotlin.system.exitProcess
 
 // Constantes parametrant la modelisation
 // BASE_MONEY correspond a la base monetaire de chaque agent
