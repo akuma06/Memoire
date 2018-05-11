@@ -21,7 +21,7 @@ const val VARIATION_MONEY = 15000L
 const val NB_DAYS = 10
 // TICKS correspond au nombre de ticks par jour
 // TODO: Demander car il me semble tres lourd de faire cette simu
-const val TICKS = 3060
+const val TICKS = 30600000
 // NB_CHARTIST correspond au nombre unique de chaque type de chartiste
 const val NB_CHARTIST = 10
 // NB_BEST_LIMIT correspond au nombre unique de chaque type de chartiste achetant à la meilleur limite
