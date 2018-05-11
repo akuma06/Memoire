@@ -1,7 +1,7 @@
 package main.helpers
 
-import main.ui.MainApplication
-import main.ui.MainFrame
+import ui.MainApplication
+import ui.MainFrame
 import java.io.OutputStream
 import java.io.PrintStream
 import javax.swing.SwingUtilities

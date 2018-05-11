@@ -1,4 +1,4 @@
-package main.ui;
+package ui;
 
 import v13.Day;
 import v13.Simulation;
