@@ -4,13 +4,17 @@ import main.agents.PriceCandle
 
 object PricesList {
     val prices = arrayListOf<PriceCandle>()
+    var lastTick = 0
     val lastIndex: Int
         get() = prices.lastIndex
     val size:Int
         get() = prices.size
 
-    fun add(p: PriceCandle) {
-        prices.add(p)
+    fun add(p: PriceCandle?) {
+        if (p != null && lastTick == p.tick) {
+            prices.add(p)
+            lastTick = p.tick
+        }
     }
     fun clear() {
         prices.clear()
@@ -24,6 +28,6 @@ object PricesList {
     }
 
     operator fun set(index: Int, value: PriceCandle) {
-        prices.set(index, value)
+        prices[index] = value
     }
 }

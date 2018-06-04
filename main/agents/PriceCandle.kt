@@ -9,10 +9,10 @@ import v13.OrderBook
  * en utilisant la fonction ReadDay.
  * TODO: possible modification en utilisant un constructeur alternatif
  */
-data class PriceCandle(var low: Long = 0, var high: Long = 0, var last: Long = 0, var first: Long = 0) {
-    fun ReadDay(day: OrderBook, interval: Int = 5): PriceCandle {
+data class PriceCandle(var low: Long = 0, var high: Long = 0, var last: Long = 0, var first: Long = 0, var tick: Int = 0) {
+    fun ReadDay(day: OrderBook, interval: Int = 5, currentTick: Int = 0): PriceCandle? {
         if (day.lastPrices.size < interval)
-            return this
+            return null
         val maxPrices = day.lastPrices.size-1
         first = day.lastPrices[maxPrices-(interval-1)].price
         last = day.lastPrices[maxPrices].price
@@ -22,6 +22,7 @@ data class PriceCandle(var low: Long = 0, var high: Long = 0, var last: Long = 0
             if (high < day.lastPrices[maxPrices-i].price || high == (0).toLong())
                 high = day.lastPrices[maxPrices-i].price
         }
+        tick = currentTick
         return this
     }
 }

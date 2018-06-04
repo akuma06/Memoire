@@ -2,14 +2,18 @@ package main
 
 import main.helpers.LogFile
 import main.agents.IntradayCandleAgent
+import main.policy.RealMarketOrderPolicy
 import v13.Day
 import v13.Logger
 import v13.MonothreadedSimulation
 import v13.agents.ZIT
+import v13.agents.ZITimproved
 import v13.agents.chartist.StrategicAgent
 import v13.agents.chartist.policy.MarketOrderPolicy
 import v13.agents.chartist.signal.*
 import v13.agents.chartist.strategy.SingleSignalStrategy
+import java.io.PrintWriter
+import java.util.*
 
 // Constantes parametrant la modelisation
 // BASE_MONEY correspond a la base monetaire de chaque agent
@@ -18,10 +22,10 @@ const val BASE_MONEY = 100000L
 // venant s'ajouter à BASE_MONEY
 const val VARIATION_MONEY = 15000L
 // NB_DAYS correspond au nombre de jours de tradings
-const val NB_DAYS = 10
+const val NB_DAYS = 60
 // TICKS correspond au nombre de ticks par jour
 // TODO: Demander car il me semble tres lourd de faire cette simu
-const val TICKS = 30600000
+const val TICKS = 3060000
 // NB_CHARTIST correspond au nombre unique de chaque type de chartiste
 const val NB_CHARTIST = 10
 // NB_BEST_LIMIT correspond au nombre unique de chaque type de chartiste achetant à la meilleur limite
@@ -44,13 +48,13 @@ fun main(args: Array<String>) {
 
     // On utilise un logger qui print en stdout et enregistre les logs dans un fichier
     // Ensuite on utilisera ./generatecsv.py pour générer les différents fichiers csv
-    sim.logger = Logger(LogFile(System.out))
+    sim.logger = Logger("I:/Documents/simulation_${UUID.randomUUID()}")
 
     val obName = "lvmh"
     sim.addNewOrderBook(obName)
 
     for (i in 1..NB_ZIT) {
-        sim.addNewAgent(ZIT("paul-${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY))) // cash, bornes par défaut
+        sim.addNewAgent(ZITimproved("paul-${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY))) // cash, bornes par défaut
     }
 
     for (i in 1..NB_CHARTIST) {
@@ -66,7 +70,7 @@ fun main(args: Array<String>) {
         } else if (i < NB_REVERSE)
             reverse = true
         sim.addNewAgent(StrategicAgent("RSI-${i}", BASE_MONEY + Math.round(Math.random()* VARIATION_MONEY), Rsi(5), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
-        sim.addNewAgent(StrategicAgent("MMA--${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), MixedMovingAverage(15,50), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
+        sim.addNewAgent(StrategicAgent("MMA-${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), MixedMovingAverage(15,50), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
         sim.addNewAgent(StrategicAgent("Mom-${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), Momentum(5), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
         sim.addNewAgent(StrategicAgent("MA-${i}",BASE_MONEY +  Math.round(Math.random()*VARIATION_MONEY), MovingAverage(10), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
         sim.addNewAgent(StrategicAgent("VA1-${i}", BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), Variation(3, 3, 5), SingleSignalStrategy(reverse), MarketOrderPolicy(14500L, 75, bestLimit)))
@@ -76,7 +80,8 @@ fun main(args: Array<String>) {
     // On ajoute un IntradayCandleAgent qui va agir avec ses strategies contre tous les autres agents Chartistes
     // On peut ainsi tester seulement les performances de sa strategie (meme maniere que le papier HFT)
     // comme l'agent chandelier ne prend qu'une décision
-    sim.addNewAgent(IntradayCandleAgent("ID_Candle",BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), 5, policy = MarketOrderPolicy(14500L, 75, false)))
+    sim.addNewAgent(IntradayCandleAgent("ID_CandleX3",BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), 5, policy = RealMarketOrderPolicy(75), signals = arrayListOf(Rsi(5)), hold = 3))
+    sim.addNewAgent(IntradayCandleAgent("ID_CandleX10",BASE_MONEY + Math.round(Math.random()*VARIATION_MONEY), 5, policy = RealMarketOrderPolicy(75), signals = arrayListOf(Rsi(5)), hold = 10))
 
     // Reste du old hack pour avoir les donnees en temps reel
     //    mainApp.runMarket(sim, Day.createEuroNEXT(0, 1000, 0), 4)
